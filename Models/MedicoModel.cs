@@ -10,13 +10,14 @@
         public string? Especialidade { get; set; }
 
 
-        public MedicoModel(string? nome, string? crm, string? endereco, string? telefone, string? email)
+        public MedicoModel(string? nome, string? crm, string? endereco, string? telefone, string? email,string? especialidade)
         {
             this.nome = nome;
             this.crm = crm;
             this.endereco = endereco;
             this.telefone = telefone;
             this.email = email;
+            this.Especialidade = especialidade;
         }
 
         
