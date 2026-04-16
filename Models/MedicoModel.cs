@@ -2,6 +2,8 @@
 {
     public class MedicoModel
     {
+        internal string? especialidade;
+
         public string? nome {  get; set; } 
         public string? crm { get; set; }
         public string? endereco { get; set; }
