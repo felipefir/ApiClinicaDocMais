@@ -14,13 +14,7 @@
         public string? email { get; set; }
 
 
-        public PacienteModels(string? cpf,string? nome,string? dataNasciment, string v)
-        {
-            this.crm = cpf;
-            this.nome = nome;
-            this.dataNascimento = dataNasciment;
-           
-        }
+      
     }
 
 }

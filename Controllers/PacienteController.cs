@@ -43,10 +43,6 @@ namespace clinicaDocMais.Controllers
         [HttpGet("pacientes")]
         public List<PacienteModels> listarPaciente()
         {
-            PacienteModels novoPaciente = new PacienteModels("1019210", "Giovanni", "10/04/1999", "Vermelha");
-            listaPaciente.Add(novoPaciente);
-            novoPaciente = new PacienteModels("1020220", "Eduarda", "15/03/1990", "Verde");
-            listaPaciente.Add(novoPaciente);
             return listaPaciente;
         }
 
