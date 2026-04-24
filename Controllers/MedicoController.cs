@@ -1,7 +1,9 @@
-﻿using clinicaDocMais.Models;
+﻿using clinicaDocMais.Data;
+using clinicaDocMais.Models;
 using clinicaDocMais.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Runtime.CompilerServices;
 
@@ -12,68 +14,87 @@ namespace clinicaDocMais.Controllers
     public class MedicoController : ControllerBase
     {
 
-        public static List<MedicoModel> listaMedicos = new List<MedicoModel>();
+      
+        
+        private readonly ClinicaContext _context;
+        public MedicoController(ClinicaContext context)
+        {
+            _context = context;
+        }
 
 
         [HttpPost("cadastroMedico")]
-        public string cadastrarMedico([FromBody] MedicoModel medico)
+        public async Task<IActionResult> cadastrarMedico([FromBody] MedicoModel medicoCadastrado)
         {
-
-            listaMedicos.Add(medico);
-            return $"Dr. {medico.nome} cadastrodo com sucesso";
+            try
+            {
+                _context.Add(medicoCadastrado);
+                await _context.SaveChangesAsync();
+                return Created();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-        //listar os medicos
-        [HttpGet("listaMedico")]
-        public List<MedicoModel> listarMedicos()
-
-        {
-            return listaMedicos;
-        }
+      
         //editar medico
 
         [HttpPut("editarMedico/{crm}")]
-        public string editarMedico([FromBody] MedicoModel medicoEditado, string crm)
+        public async Task<IActionResult> editarMedico([FromBody] MedicoModel MedicoEditado, string crm)
         {
-            MedicoService medico = new MedicoService();
-            medico.editarMedico(medicoEditado, crm);
-
-            if (medico == null)
+            try
             {
-                return "medico nao encontrado";
+                _context.medicos.Update(MedicoEditado);
+                await _context.SaveChangesAsync();
+                return Ok(MedicoEditado);
             }
-            else
+            catch (Exception ex)
             {
-                return $"medico de crm nº {crm} editado com sucesso";
+                return BadRequest(ex.Message);
             }
         }
-    
+
         //excluir medico
         [HttpDelete("deletarMedico/{crm}")]
-        public string deletarMedico(string crm)
+        public async Task<IActionResult> deletarMedico(string crm)
         {
-            foreach (var medico in listaMedicos)
+
+            try
             {
-                if (medico.crm == crm)
+                MedicoModel? MedicoEncontrado = await _context.medicos.FindAsync(crm);
+
+                if (MedicoEncontrado != null)
                 {
-                    listaMedicos.Remove(medico);
-                    return $"medico com crm {crm} removido com sucesso";
+
+                    _context.medicos.Remove(MedicoEncontrado);
+                    await _context.SaveChangesAsync();
+                    return NoContent();
+                }
+                else
+                {
+                    throw new Exception($"medico de CRM: {crm} nao existe");
                 }
             }
-            return "medico nao encotrado.";
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-        
+
         [HttpGet("buscaMedico/{crm}")]
-        public MedicoModel? BuscarMedico(string crm)
+        public async Task<IActionResult> BuscarMedico(string crm)
         {
-            foreach (var medico in listaMedicos)
+
+            try
             {
-                if (medico.crm != crm)
-                {
-                    continue;
-                }
-                return medico;
+                MedicoModel? MedicoEncontrado = await _context.medicos.FindAsync(crm);
+                return Ok(MedicoEncontrado);
             }
-            return null;
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -1,8 +1,11 @@
-﻿    
-        namespace clinicaDocMais.Models
+﻿
+using System.ComponentModel.DataAnnotations;
+
+namespace clinicaDocMais.Models
     {
         public class AgendamentoModel
         {
+            public string? id { get; set; }
             // Dados do paciente
             public string? nomePaciente { get; set; }
             public string? Cpf { get; set; }
@@ -11,7 +14,7 @@
             // Dados do médico
             public string? nomeMedico { get; set; }
             public string? Crm { get; set; }
-        public string? especialidadeMedico {  get; set; }
+            public string? especialidadeMedico {  get; set; }
 
         
 

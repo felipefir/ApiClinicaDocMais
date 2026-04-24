@@ -19,7 +19,7 @@ namespace clinicaDocMais.Services
                     Medico.nome = medicoEditado.nome;
                     Medico.telefone = medicoEditado.telefone;
                     Medico.email = medicoEditado.email;
-                    Medico.Especialidade = medicoEditado.Especialidade;
+                    Medico.especialidade = medicoEditado.especialidade;
                     Medico.endereco = medicoEditado.endereco;
                     return Medico;
                 }

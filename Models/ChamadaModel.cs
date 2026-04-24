@@ -2,6 +2,7 @@
 {
     public class ChamadaModel
     {
+        public string? id { get; set; }
         // Nome do paciente
         public string? PacienteNome { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using clinicaDocMais.Models;
+﻿using clinicaDocMais.Data;
+using clinicaDocMais.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
@@ -9,86 +10,85 @@ namespace clinicaDocMais.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class SaudeController : Controller
+    public class PacienteController : ControllerBase
     {
-        public static List<PacienteModels> listaPaciente = new List<PacienteModels>();
 
-        [HttpGet("retornoCasa")]
-        public string casa()
+
+        private readonly ClinicaContext _context;
+        public PacienteController(ClinicaContext context)
         {
-            return "casa";
+            _context = context;
         }
 
-
-
-        [HttpGet("nomePaciente")]
-        public string paciente()
+        [HttpPost("cadastroPaciente")]
+        public async Task<IActionResult> cadastrarPaciente([FromBody] PacienteModels pacienteCadastrado)
         {
-            string nome = "Giovanni";
-            return "Paciente: " + nome;
-        }
-
-
-
-        [HttpGet("listaPacientes")]
-        public List<string> listaNome()
-        {
-            List<string> listaPacientes = new List<string>();
-            listaPacientes = ["Giovanni", "Carlos", "Pedro"];
-            return listaPacientes;
-        }
-
-
-
-        [HttpGet("pacientes")]
-        public List<PacienteModels> listarPaciente()
-        {
-            return listaPaciente;
-        }
-
-        [HttpGet("buscaPaciente/{id}")]
-        public PacienteModels? BuscarPaciente(string id)
-        {
-            foreach (var paciente in listaPaciente)
+            try
             {
-                if (paciente.crm == id)
-                {
-                    return paciente;
-                }
+                _context.Add(pacienteCadastrado);
+                await _context.SaveChangesAsync();
+                return Created();
             }
-            return null;
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-        [HttpPut("editarPaciente/{id}")]
-        public string editarPaciente([FromBody] PacienteModels pacienteEditado, string id)
+        [HttpGet("buscaPaciente/{cpf}")]
+        public async Task<IActionResult> BuscarPaciente(string cpf)
         {
-            foreach (var paciente in listaPaciente) {
-                if (paciente.crm == id)
-                {
-                    paciente.crm = pacienteEditado.crm;
-                    paciente.nome = pacienteEditado.nome;
-                    paciente.telefone = pacienteEditado.telefone;
-                    paciente.email = pacienteEditado.email;
-                   
-                    paciente.dataNascimento = pacienteEditado.dataNascimento;
-                    paciente.endereco = pacienteEditado.endereco;
-                    return $"paciente{paciente.nome},cpf anterior: {id} editado com sucesso";
-                }
+
+            try
+            {
+                PacienteModels? pacieteEncontrado = await _context.medicos.FindAsync(cpf);
+                return Ok(pacieteEncontrado);
             }
-            return "paciente nao encontrado.";
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpDelete("deletarPaciente/{id}")]
-        public string deletarPaciente(string id)
+
+        [HttpPut("editarPaciente/{cpf}")]
+        public async Task<IActionResult> editarPaciente([FromBody] PacienteModels pacienteEditado, string cpf)
         {
-            foreach (var paciente in listaPaciente)
+            try
             {
-                if (paciente.cpf == id)
-                {
-                   listaPaciente.Remove(paciente);
-                    return $"paciente com cpf {id} removido com sucesso";
-                }
+                _context.medicos.Update(pacienteEditado);
+                await _context.SaveChangesAsync();
+                return Ok(pacienteEditado);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-            return "paciente nao encotrado.";
+
+        [HttpDelete("deletarPaciente/{cpf}")]
+        public async Task<IActionResult> deletarPaciente(string cpf)
+        {
+
+            try { 
+            PacienteModels? pacieteEncontrado = await _context.medicos.FindAsync(cpf);
+
+            if (pacieteEncontrado != null)
+            {
+
+                _context.medicos.Remove(pacieteEncontrado);
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            else
+            {
+                throw new Exception($"paciente de CPF: {cpf} nao existe");
+            }
+        }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
-}
+            
+    }
