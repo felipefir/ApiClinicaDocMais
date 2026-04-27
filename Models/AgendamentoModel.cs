@@ -7,14 +7,14 @@ namespace clinicaDocMais.Models
         {
             public string? id { get; set; }
             // Dados do paciente
-            public string? nomePaciente { get; set; }
-            public string? Cpf { get; set; }
-            public string? Telefone { get; set; }
-
+           
+            public string? cpfPacinte { get; set; }
+        public PacienteModels? paciente { get; set; }
             // Dados do médico
-            public string? nomeMedico { get; set; }
-            public string? Crm { get; set; }
-            public string? especialidadeMedico {  get; set; }
+           
+            public string? CrmMedico { get; set; }
+        public MedicoModel? Medico { get; set; }
+          
 
         
 
